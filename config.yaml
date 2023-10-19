@@ -1,0 +1,48 @@
+cam_id: 0
+min_radius: 640
+min_contour: 800
+Vision_Mode: True
+serialport_mode: True
+
+signal_values:
+  header: 0xFF
+  mode: 0x00
+  x_pos_1: 0x00
+  x_pos_2: 0x00
+  x_pos_3: 0x00
+  y_pos_1: 0x00
+  y_pos_2: 0x00
+  y_pos_3: 0x00
+  color: 0x00
+  tail: 0xFE
+
+serial_config:
+  port: /dev/ttyUSB0
+  baudrate: 115200
+  bytesize: 8
+  parity: none
+  stopbits: 1
+
+Materail_Thresholds:
+  lower_blue_contour: [100, 43, 46]
+  upper_blue_contour: [124, 255, 255]
+  lower_green_contour: [40, 92, 46]
+  upper_green_contour: [90, 255, 255]
+  lower_red_contour: [160, 43, 46]
+  upper_red_contour: [180, 255, 255]
+
+Landmark_Thresholds:
+  lower_blue_circle: [90, 0, 0]
+  upper_blue_circle: [150, 255, 255]
+  lower_green_circle: [38, 0, 46]
+  upper_green_circle: [82, 255, 255]
+  lower_red_1_circle: [0, 0, 46]
+  upper_red_1_circle: [15, 255, 255]
+  lower_red_2_circle: [156, 0, 46]
+  upper_red_2_circle: [180, 255, 255]
+
+Edge_Thresholds:
+  lower_contour: [100, 13, 0]
+  upper_contour: [255, 255, 255]
+
+
