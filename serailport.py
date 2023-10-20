@@ -12,17 +12,6 @@ with open("config.yaml", 'r') as file:
 header = config["signal_values"]["header"]
 tail = config["signal_values"]["tail"]
 
-# signal_values:
-#   header: 0xFF
-#   mode: 0x00
-#   x_pos_1: 0x00
-#   x_pos_2: 0x00
-#   x_pos_3: 0x00
-#   y_pos_1: 0x00
-#   y_pos_2: 0x00
-#   y_pos_3: 0x00
-#   color: 0x00
-#   tail: 0xFE
 
 send_byte = bytearray([config["signal_values"]["header"], 
                        config["signal_values"]["mode"], 
@@ -71,29 +60,37 @@ def receive_serial_data(ser):
                 received_data = bytearray()  # 重置接收数据
                 
         time.sleep(0.2)
-
     
 # 生成串口数据、发送数据并等待回传结果
 def send_serial_data(serial):
     send_data = send_byte
-    center = parameter.Object_Data.center
-    print(center)
-    color = parameter.Mode.color_detect
-    center0 = center[0]
-    center1 = center[1]
-    send_data[1] = parameter.Mode.task_detect
+    if parameter.Mode.task_detect != 7:
+        center = parameter.Object_Data.center
+        print(center)
+        color = parameter.Mode.color_detect
+        center0 = center[0]
+        center1 = center[1]
+        send_data[1] = parameter.Mode.task_detect
 
-    send_data[2] = center0 & 0xFF
-    send_data[3] = (center0 >> 8) & 0xFF
-    send_data[4] = (center0 >> 16) & 0xFF
-    send_data[5] = (center1 & 0xFF)
-    send_data[6] = ((center1 >> 8) & 0xFF)
-    send_data[7] = ((center1 >> 16) & 0xFF)
+        send_data[2] = center0 & 0xFF
+        send_data[3] = (center0 >> 8) & 0xFF
+        send_data[4] = (center0 >> 16) & 0xFF
+        send_data[5] = (center1 & 0xFF)
+        send_data[6] = ((center1 >> 8) & 0xFF)
+        send_data[7] = ((center1 >> 16) & 0xFF)
 
-    send_data[8] =  color
-    
-    serial.write(send_data)
-    
+        send_data[8] =  color
+        
+        serial.write(send_data)
+    if parameter.Mode.task_detect == 7:
+
+        send_data[1] = parameter.Mode.task_detect
+
+        for i in range(6):
+            send_data[i+2]=parameter.WiFi_Scan.task_number[i]
+
+        send_data[8] =  0x00
+        serial.write(send_data)
     print(time.strftime('Send:%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
     print(send_data)
     time.sleep(0.3)
@@ -103,36 +100,10 @@ def receive_thread(serial):
         receive_serial_data(serial)
         
 def send_thread(serial):
-    while True:
-        send_serial_data(serial)
-def send_thread_2(serial):
-    while True:
-        send_serial_data_2(serial)
-# 生成串口数据、发送数据并等待回传结果
-def send_serial_data_2(serial):
-    send_data = receive_byte
     
-    send_data[1] = 0x03
+    while True:
+        if parameter.Mode.task_detect is not 0:
+            send_serial_data(serial)
+        
 
-    send_data[2] = 0x06
-    
-    serial.write(send_data)
-    
-    print(time.strftime('Send:%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-    print(send_data)
-    time.sleep(1.5)
-# 示例用法
-# if __name__ == "__main__":
-#      # 启动接收数据的线程
-#        ser = serial_init()
-#        while True:
-#            send_serial_data(ser)
-       
-       #receive_thread(ser)
-#     receive_serial_data(ser=serial_init())
-#     receive_thread = threading.Thread(target=receive_thread, args=(ser,))
-#     receive_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
-#     receive_thread.start()
-#     while True:
-#         send_serial_data(ser)
 
