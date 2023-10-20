@@ -4,6 +4,7 @@ import cv2 as cv
 import numpy as np
 import threading
 import serailport
+import WiFi_Scanner
 
 RED=3
 GREEN=4
@@ -38,7 +39,8 @@ def main(cam_id):
 
         if parameter.Mode.task_detect == 6:
             Edge_Detect(img)
-            
+        
+
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
     cap.release()
@@ -264,15 +266,19 @@ if __name__ == "__main__":
     cam_id = config["cam_id"]
     serialport_mode = config["serialport_mode"]
     
+    Wifi_Scanner_thread = threading.Thread(target=WiFi_Scanner.Wifi_Scanner_thread, args=())
+    Wifi_Scanner_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
+    Wifi_Scanner_thread.start()
+    
     if serialport_mode:
         ser = serailport.serial_init()
         receive_thread = threading.Thread(target=serailport.receive_thread, args=(ser,))
         receive_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
         receive_thread.start()
 
-        if parameter.Mode.task_detect != 0:
-            send_thread = threading.Thread(target=serailport.send_thread, args=(ser,))
-            send_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
-            send_thread.start()
+        
+        send_thread = threading.Thread(target=serailport.send_thread, args=(ser,))
+        send_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
+        send_thread.start()
     
     main(cam_id)
