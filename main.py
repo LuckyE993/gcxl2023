@@ -22,7 +22,7 @@ def open_camera(cam_id):
 
 def main(cam_id):
     cap = open_camera(cam_id)
-
+    print("Camera Open Success!")
     while True:
         _, img = cap.read()
         img = cv.flip(img, -1)
@@ -70,7 +70,7 @@ def Materail_detect(img,color):
     contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     max_perimeter = 0
     largest_contour = None
-    
+
     # 遍历每个轮廓
     for cnt in contours:
         perimeter = cv.arcLength(cnt, True)
@@ -266,19 +266,20 @@ if __name__ == "__main__":
     cam_id = config["cam_id"]
     serialport_mode = config["serialport_mode"]
     
-    Wifi_Scanner_thread = threading.Thread(target=WiFi_Scanner.Wifi_Scanner_thread, args=())
-    Wifi_Scanner_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
-    Wifi_Scanner_thread.start()
+    # Wifi_Scanner_thread = threading.Thread(target=WiFi_Scanner.Wifi_Scanner_thread, args=())
+    # Wifi_Scanner_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
+    # Wifi_Scanner_thread.start()
     
     if serialport_mode:
         ser = serailport.serial_init()
         receive_thread = threading.Thread(target=serailport.receive_thread, args=(ser,))
         receive_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
         receive_thread.start()
-
+        print("Receive Thread Start!")
         
         send_thread = threading.Thread(target=serailport.send_thread, args=(ser,))
         send_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
         send_thread.start()
-    
+        print("Send Thread Success!")
+
     main(cam_id)
