@@ -4,6 +4,13 @@ min_contour: 800
 Vision_Mode: True
 serialport_mode: True
 
+serial_config:
+  port: /dev/ttyUSB0
+  baudrate: 115200
+  bytesize: 8
+  parity: none
+  stopbits: 1
+
 signal_values:
   header: 0xFF
   mode: 0x00
@@ -15,13 +22,6 @@ signal_values:
   y_pos_3: 0x00
   color: 0x00
   tail: 0xFE
-
-serial_config:
-  port: /dev/ttyUSB0
-  baudrate: 115200
-  bytesize: 8
-  parity: none
-  stopbits: 1
 
 Materail_Thresholds:
   lower_blue_contour: [100, 43, 46]
