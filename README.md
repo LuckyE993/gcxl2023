@@ -3,7 +3,7 @@
 # 任务需求：
 >原文：在比赛过程中机器人必须完全自主运行，应具有定位、移动、避障、读取二维码、条形码及无线通信、物料位置和颜色识别、物料抓取与载运、路径规划等功能。
 
-小组讨论后视觉应该完成 `物料位置和颜色识别、物料抓取` 的功能
+小组讨论后视觉应该完成 `物料位置和颜色识别、地标圆心识别` 的功能
 
 # 必读：
 **config.py 和 parameter.py 中包含绝大多数主要文件所需要的变量，一定要结合这两个文件看。**
@@ -65,9 +65,6 @@ D1(下位机发送)-->D
 开启摄像头
 ```
 def open_camera(cam_id):
-    cap = cv.VideoCapture(cam_id)
-    cap.set(cv.CAP_PROP_FPS, 30)
-    return cap
 ```
 
 **主要功能：原料区物料检测**
@@ -93,6 +90,7 @@ def int_to_binary_complement(number):
 ### 整体流程：
 ```mermaid
 graph LR
+
 A(串口初始化)-->B0(设置串口接收线程)
 A-->C0(设置串口发送线程)
 C0-->C(检测模式任务标志位)
@@ -121,6 +119,70 @@ def send_serial_data(serial):
 ```
 def receive_serial_data(ser):
 ```
+
+## config.yaml
+**这里抽象出项目所需要的绝大多数变量，请认真阅读**
+```
+cam_id:         摄像头索引  默认值:0
+min_radius:     识别地标中最小的圆心半径    默认值：640
+                这里默认给一个最大值640，视具体情况改变，其在运行中会自动更新
+min_contour:    原料区识别物料的轮廓最小周长，小于此则忽略 默认值：800
+Vision_Mode:    是否可视化 默认值：True
+serialport_mode:是否使用串口 默认值：True
+
+serial_config:  串口相关配置
+  port:         串口端口号 默认值：/dev/ttyUSB0    
+  baudrate:     串口波特率 默认值：115200
+  bytesize:     串口字长   默认值：8
+  parity:       串口校验   默认值：none
+  stopbits:     串口停止位 默认值：1
+
+signal_values:  串口通信信号值
+  header:       帧头    默认值：    0xFF      
+  mode:         模式位  默认值：     0x00    静默
+                                    0x01    物料检测 
+                                    0x02    地标圆心检测
+                                    0x06    边缘检测
+                                    0x07    WiFi获取任务列表
+  x_pos_1:      X坐标   默认值：     0x00    center_x   
+  x_pos_2:                          0x00    center_x>>8
+  x_pos_3:                          0x00    center_x>>16(没啥用，我的问题)
+  y_pos_1:      X坐标   默认值：     0x00    center_y   
+  y_pos_2:                          0x00    center_y>>8
+  y_pos_3:                          0x00    center_y>>16
+  color:        颜色    默认值：     0x00    无色
+                                    0x03    红
+                                    0x04    绿
+                                    0x05    蓝
+  tail:         尾帧    默认值：     0xFE
+
+Materail_Thresholds:        物料检测不同物料的阈值（视摄像头型号及光线设置）
+  lower_blue_contour: [100, 43, 46]
+  upper_blue_contour: [124, 255, 255]
+  lower_green_contour: [40, 92, 46]
+  upper_green_contour: [90, 255, 255]
+  lower_red_contour: [160, 43, 46]
+  upper_red_contour: [180, 255, 255]
+
+Landmark_Thresholds:        地标检测不同地标的阈值（视摄像头型号及光线设置）
+  lower_blue_circle: [90, 0, 0]
+  upper_blue_circle: [150, 255, 255]
+  lower_green_circle: [38, 0, 46]
+  upper_green_circle: [82, 255, 255]
+  lower_red_1_circle: [0, 0, 46]
+  upper_red_1_circle: [15, 255, 255]
+  lower_red_2_circle: [156, 0, 46]
+  upper_red_2_circle: [180, 255, 255]
+
+Edge_Thresholds:            边缘检测阈值：必须视摄像头型号及光线设置
+  lower_contour: [100, 13, 0]
+  upper_contour: [255, 255, 255]
+
+
+
+```
+
+
 ## Wifi Scanner.py
 **该部分使用Github开源程序 https://github.com/kootenpv/access_points 感谢**
 
@@ -138,3 +200,10 @@ def Wifi_Scan_Start():
 ```
 def Wifi_Scanner_thread(): 
 ```
+# 未解决的问题（相信后人的智慧）：
+1、串口偶尔会掉，摄像头也是。初步估计是接口松动或者调试过程中碰到设备原件（没有外壳T_T）
+
+2、重新拔插外设（摄像头和USB转串口）会报找不到设备的错误。
+
+解决方法：首先使用 ```ls /dev/video*``` 或 ```ls /dev/ttyUSB*``` 枚举出所有设备。一般摄像头为 /dev/video0 或 /dev/video1 ; 串口一般为/dev/ttyUSB0 或 /dev/ttyUSB1。（ 可以通过Python 中的错误处理来枚举设备，但是我水平不足能力有限QAQ）
+
