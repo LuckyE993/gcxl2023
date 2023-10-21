@@ -1,4 +1,26 @@
-[toc]
+# 2023工程实践与创新能力大赛-智能物流分拣-沈阳航空航天大学
+- [任务需求：](#-----)
+- [必读：](#---)
+- [文件功能速览：](#-------)
+  * [main.py](#mainpy)
+  * [seialport.py](#seialportpy)
+  * [WiFi_Scanner.py](#wifi-scannerpy)
+  * [config.yaml](#configyaml)
+  * [parameter.py](#parameterpy)
+- [文件功能详解](#------)
+  * [main.py](#mainpy-1)
+    + [工作流程](#----)
+    + [函数解释](#----)
+  * [serialport.py](#serialportpy)
+    + [整体流程：](#-----)
+    + [函数说明](#----)
+  * [config.yaml](#configyaml-1)
+  * [Wifi Scanner.py](#wifi-scannerpy)
+    + [整体流程](#----)
+    + [函数说明](#-----1)
+- [未解决的问题（相信后人的智慧）：](#----------------)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 # 任务需求：
 >原文：在比赛过程中机器人必须完全自主运行，应具有定位、移动、避障、读取二维码、条形码及无线通信、物料位置和颜色识别、物料抓取与载运、路径规划等功能。
