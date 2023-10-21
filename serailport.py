@@ -3,15 +3,13 @@ import yaml
 from enum import Enum
 import time
 import parameter
-
+import threading
 
 with open("config.yaml", 'r') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 
-
 header = config["signal_values"]["header"]
 tail = config["signal_values"]["tail"]
-
 
 send_byte = bytearray([config["signal_values"]["header"], 
                        config["signal_values"]["mode"], 
@@ -45,6 +43,7 @@ def receive_serial_data(ser):
     received_data = bytearray()  # 用于存储接收到的数据
 
     while True:
+
         if ser.in_waiting > 0:  # 检查是否有可用的数据
 
             received_byte = ser.read(1)  # 读取一个字节
@@ -65,9 +64,9 @@ def receive_serial_data(ser):
                         print(time.strftime('Receive:%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
                         print(received_data)
                 received_data = bytearray()  # 重置接收数据
-          
+        
         time.sleep(0.1)
-    
+  
 # 生成串口数据、发送数据并等待回传结果
 def send_serial_data(serial):
     send_data = send_byte
@@ -113,5 +112,14 @@ def send_thread(serial):
         else:
             parameter.Object_Data.center = (0, 0)
         
-
-
+def Serial_Start():
+    ser = serial_init()
+    receive_thread_obj = threading.Thread(target=receive_thread, args=(ser,))
+    receive_thread_obj.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
+    receive_thread_obj.start()
+    print("Receive Thread Start!")
+    
+    send_thread_obj = threading.Thread(target=send_thread, args=(ser,))
+    send_thread_obj.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
+    send_thread_obj.start()
+    print("Send Thread Start!")

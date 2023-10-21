@@ -2,7 +2,6 @@ import parameter
 import yaml
 import cv2 as cv
 import numpy as np
-import threading
 import serailport
 import WiFi_Scanner
 
@@ -271,15 +270,6 @@ if __name__ == "__main__":
     # Wifi_Scanner_thread.start()
     
     if serialport_mode:
-        ser = serailport.serial_init()
-        receive_thread = threading.Thread(target=serailport.receive_thread, args=(ser,))
-        receive_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
-        receive_thread.start()
-        print("Receive Thread Start!")
-        
-        send_thread = threading.Thread(target=serailport.send_thread, args=(ser,))
-        send_thread.daemon = True  # 设置线程为守护线程，这样主程序退出时会自动结束线程
-        send_thread.start()
-        print("Send Thread Success!")
+        serailport.Serial_Start()
 
     main(cam_id)
