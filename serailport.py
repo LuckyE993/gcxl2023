@@ -67,7 +67,7 @@ def receive_serial_data(ser):
         
         time.sleep(0.1)
   
-# 生成串口数据、发送数据并等待回传结果
+# 生成串口数据、发送数据
 def send_serial_data(serial):
     send_data = send_byte
     if parameter.Mode.task_detect != 7:
