@@ -1,4 +1,4 @@
-cam_id: 0
+cam_id: 2
 min_radius: 640
 min_contour: 800
 Vision_Mode: True
