@@ -5,6 +5,9 @@ import subprocess
 import parameter
 import time
  
+__project__ = "access_points"
+__version__ = "0.4.63"
+__repo__ = "https://github.com/kootenpv/access_points"
 def ensure_str(output):
     try:
         output = output.decode("utf8",errors='ignore')

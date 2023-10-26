@@ -67,13 +67,13 @@ def receive_serial_data(ser):
         
         time.sleep(0.1)
   
-# 生成串口数据、发送数据并等待回传结果
+# 生成串口数据、发送数据
 def send_serial_data(serial):
     send_data = send_byte
     if parameter.Mode.task_detect != 7:
         center = parameter.Object_Data.center
         print(center)
-        color = parameter.Mode.color_detect
+        color = parameter.Object_Data.color
         center0 = center[0]
         center1 = center[1]
         send_data[1] = parameter.Mode.task_detect
@@ -111,6 +111,7 @@ def send_thread(serial):
             send_serial_data(serial)
         else:
             parameter.Object_Data.center = (0, 0)
+            parameter.Object_Data.color = 0x00
         
 def Serial_Start():
     ser = serial_init()
