@@ -26,7 +26,6 @@ Currently working on the [2025 version development](https://github.com/LuckyE993
     - [函数说明](#函数说明-1)
 - [ToDo](#未解决的问题相信后人的智慧)
 ---
-![alt text](pic/image.png)
 ![alt text](pic/show1.gif)    ![alt text](pic/show2.gif)
 ---
 
